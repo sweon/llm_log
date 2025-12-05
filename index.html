@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>llm_log</title>
+</head>
+
+<body>
+  <div id="app">
+    <aside id="sidebar">
+      <div class="sidebar-header">
+        <button id="btn-new-log" class="btn-primary">+ New Log</button>
+        <div class="search-container">
+          <input type="text" id="search-input" placeholder="Search logs..." />
+        </div>
+        <div class="filter-container">
+          <select id="sort-select">
+            <option value="date">Sort by Date</option>
+            <option value="title">Sort by Title</option>
+            <option value="model">Sort by Model</option>
+          </select>
+        </div>
+        <div class="data-actions">
+          <button id="btn-export" class="btn-sm">Export</button>
+          <button id="btn-import" class="btn-sm">Import</button>
+          <input type="file" id="file-import" accept=".json" class="hidden" />
+        </div>
+      </div>
+      <ul id="log-list">
+        <!-- Log items will be injected here -->
+      </ul>
+    </aside>
+    <main id="main-content">
+      <div id="empty-state" class="hidden">
+        <p>Select a log to view or create a new one.</p>
+      </div>
+
+      <div id="editor-view" class="hidden">
+        <div class="editor-header">
+          <input type="text" id="edit-title" placeholder="Untitled Log" />
+          <div class="editor-actions">
+            <button id="btn-cancel">Cancel</button>
+            <button id="btn-save" class="btn-primary">Save</button>
+          </div>
+        </div>
+        <div class="editor-meta">
+          <input type="text" id="edit-model" placeholder="Model (e.g. GPT-4)" />
+          <input type="text" id="edit-tags" placeholder="Tags (comma separated)" />
+        </div>
+        <textarea id="edit-content" placeholder="Paste conversation here... (Markdown supported)"></textarea>
+      </div>
+
+      <div id="viewer-view" class="hidden">
+        <div class="viewer-header">
+          <h1 id="view-title"></h1>
+          <div class="viewer-actions">
+            <button id="btn-edit">Edit</button>
+            <button id="btn-delete" class="btn-danger">Delete</button>
+          </div>
+        </div>
+        <div class="viewer-meta">
+          <span id="view-date"></span>
+          <span id="view-model"></span>
+          <div id="view-tags"></div>
+        </div>
+        <div id="view-content" class="markdown-body"></div>
+      </div>
+    </main>
+  </div>
+  <script type="module" src="/src/main.js"></script>
+</body>
+
+</html>
