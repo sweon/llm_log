@@ -197,12 +197,14 @@ function showEmptyState() {
 
 async function exportData() {
   const data = Storage.export();
+  const dateStr = new Date().toISOString().split('T')[0];
+  const fileName = `llm_logs_backup_${dateStr}.json`;
 
   try {
     // Try File System Access API
     if (window.showSaveFilePicker) {
       const handle = await window.showSaveFilePicker({
-        suggestedName: 'llm_logs_backup.json',
+        suggestedName: fileName,
         types: [{
           description: 'JSON File',
           accept: { 'application/json': ['.json'] },
@@ -217,7 +219,7 @@ async function exportData() {
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
-      a.download = 'llm_logs_backup.json';
+      a.download = fileName;
       a.click();
       URL.revokeObjectURL(url);
     }
