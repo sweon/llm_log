@@ -47,7 +47,12 @@
           </div>
         </div>
         <div class="editor-meta">
-          <input type="text" id="edit-model" placeholder="Model (e.g. GPT-4)" />
+          <div class="model-select-container">
+            <select id="edit-model">
+              <option value="" disabled selected>Select Model</option>
+            </select>
+            <button id="btn-manage-models" title="Manage Models">⚙️</button>
+          </div>
           <input type="text" id="edit-tags" placeholder="Tags (comma separated)" />
         </div>
         <textarea id="edit-content" placeholder="Paste conversation here... (Markdown supported)"></textarea>
@@ -69,8 +74,34 @@
         <div id="view-content" class="markdown-body"></div>
       </div>
     </main>
-  </div>
-  <script type="module" src="/src/main.js"></script>
+
+    <!-- Delete Confirmation Modal -->
+    <div id="delete-modal" class="modal hidden">
+      <div class="modal-content">
+        <h2>Delete Log</h2>
+        <p>Are you sure you want to delete this log? This action cannot be undone.</p>
+        <div class="modal-actions">
+          <button id="btn-modal-cancel">Cancel</button>
+          <button id="btn-modal-confirm" class="btn-danger">Delete</button>
+        </div>
+        <!-- Manage Models Modal -->
+        <div id="manage-models-modal" class="modal hidden">
+          <div class="modal-content">
+            <h2>Manage Models</h2>
+            <div class="add-model-container">
+              <input type="text" id="new-model-input" placeholder="New Model Name" />
+              <button id="btn-add-model" class="btn-primary">Add</button>
+            </div>
+            <ul id="model-list">
+              <!-- Model items injected here -->
+            </ul>
+            <div class="modal-actions">
+              <button id="btn-close-models">Close</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <script type="module" src="/src/main.js"></script>
 </body>
 
 </html>

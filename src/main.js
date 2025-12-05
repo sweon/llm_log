@@ -6,6 +6,9 @@ import { Storage } from './storage.js';
 let currentLogId = null;
 let isEditing = false;
 
+
+
+
 // DOM Elements
 const app = {
   sidebar: {
@@ -38,14 +41,41 @@ const app = {
       btnEdit: document.getElementById('btn-edit'),
       btnDelete: document.getElementById('btn-delete'),
     },
+    modal: {
+      view: document.getElementById('delete-modal'),
+      btnCancel: document.getElementById('btn-modal-cancel'),
+      btnConfirm: document.getElementById('btn-modal-confirm'),
+    },
+    manageModels: {
+      btnOpen: document.getElementById('btn-manage-models'),
+      modal: document.getElementById('manage-models-modal'),
+      btnClose: document.getElementById('btn-close-models'),
+      input: document.getElementById('new-model-input'),
+      btnAdd: document.getElementById('btn-add-model'),
+      list: document.getElementById('model-list'),
+    },
   },
 };
 
 // Initialize
 function init() {
+  populateModelSelect();
   renderLogList();
   showEmptyState();
   setupEventListeners();
+}
+
+function populateModelSelect() {
+  const select = app.main.editor.model;
+  select.innerHTML = '<option value="" disabled selected>Select Model</option>';
+
+  const models = Storage.getModels();
+  models.forEach(model => {
+    const option = document.createElement('option');
+    option.value = model;
+    option.textContent = model;
+    select.appendChild(option);
+  });
 }
 
 // Event Listeners
@@ -66,7 +96,15 @@ function setupEventListeners() {
 
   // Viewer
   app.main.viewer.btnEdit.addEventListener('click', () => startEditing(currentLogId));
-  app.main.viewer.btnDelete.addEventListener('click', deleteLog);
+  app.main.viewer.btnDelete.addEventListener('click', showDeleteModal);
+
+  app.main.modal.btnCancel.addEventListener('click', hideDeleteModal);
+  app.main.modal.btnConfirm.addEventListener('click', confirmDelete);
+
+  // Manage Models
+  app.main.manageModels.btnOpen.addEventListener('click', openManageModels);
+  app.main.manageModels.btnClose.addEventListener('click', closeManageModels);
+  app.main.manageModels.btnAdd.addEventListener('click', addModel);
 }
 
 // Rendering
@@ -128,11 +166,30 @@ function startEditing(id) {
   hideAllViews();
   app.main.editor.view.classList.remove('hidden');
 
+  // Reset Model Select to default options
+  populateModelSelect();
+
   if (id) {
     // Edit existing
     const log = Storage.get(id);
     app.main.editor.title.value = log.title || '';
-    app.main.editor.model.value = log.model || '';
+
+    // Handle Model Selection
+    const modelValue = log.model || '';
+    const select = app.main.editor.model;
+
+    // Check if model exists in the list
+    const exists = Array.from(select.options).some(opt => opt.value === modelValue);
+
+    if (!exists && modelValue) {
+      // Add custom option for legacy/custom value
+      const option = document.createElement('option');
+      option.value = modelValue;
+      option.textContent = modelValue;
+      select.appendChild(option);
+    }
+    select.value = modelValue;
+
     app.main.editor.tags.value = log.tags ? log.tags.join(', ') : '';
     app.main.editor.content.value = log.content || '';
   } else {
@@ -178,14 +235,83 @@ function cancelEdit() {
   }
 }
 
-function deleteLog() {
+function showDeleteModal() {
   if (!currentLogId) return;
-  if (confirm('Are you sure you want to delete this log?')) {
-    Storage.delete(currentLogId);
-    currentLogId = null;
-    refreshList();
-    showEmptyState();
+  app.main.modal.view.classList.remove('hidden');
+}
+
+function hideDeleteModal() {
+  app.main.modal.view.classList.add('hidden');
+}
+
+function confirmDelete() {
+  if (!currentLogId) return;
+
+  Storage.delete(currentLogId);
+  currentLogId = null;
+  refreshList();
+  showEmptyState();
+  hideDeleteModal();
+}
+
+// Deprecated: deleteLog replaced by modal flow
+// function deleteLog() { ... }
+
+// Model Management
+function openManageModels() {
+  app.main.manageModels.modal.classList.remove('hidden');
+  renderModelList();
+}
+
+function closeManageModels() {
+  app.main.manageModels.modal.classList.add('hidden');
+}
+
+function renderModelList() {
+  const models = Storage.getModels();
+  const list = app.main.manageModels.list;
+  list.innerHTML = '';
+
+  models.forEach(model => {
+    const li = document.createElement('li');
+    li.className = 'model-list-item';
+    li.innerHTML = `
+      <span>${model}</span>
+      <button class="btn-delete-model" data-model="${model}">×</button>
+    `;
+    li.querySelector('.btn-delete-model').addEventListener('click', () => deleteModel(model));
+    list.appendChild(li);
+  });
+}
+
+function addModel() {
+  const input = app.main.manageModels.input;
+  const newModel = input.value.trim();
+
+  if (!newModel) return;
+
+  const models = Storage.getModels();
+  if (!models.includes(newModel)) {
+    models.push(newModel);
+    Storage.saveModels(models);
+    renderModelList();
+    populateModelSelect();
+
+    // Select the new model
+    app.main.editor.model.value = newModel;
   }
+
+  input.value = '';
+}
+
+function deleteModel(modelToDelete) {
+  if (!confirm(`Delete model "${modelToDelete}"?`)) return;
+
+  let models = Storage.getModels();
+  models = models.filter(m => m !== modelToDelete);
+  Storage.saveModels(models);
+  renderModelList();
+  populateModelSelect();
 }
 
 function showEmptyState() {

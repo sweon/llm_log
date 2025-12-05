@@ -4,6 +4,18 @@
  */
 
 const STORAGE_KEY = 'llm_logs_data';
+const STORAGE_KEY_MODELS = 'llm_logs_models';
+
+const DEFAULT_MODELS = [
+  "GPT-4o",
+  "GPT-4 Turbo",
+  "Claude 3.5 Sonnet",
+  "Claude 3 Opus",
+  "Gemini 1.5 Pro",
+  "Gemini 1.5 Flash",
+  "Llama 3",
+  "Other"
+];
 
 export const Storage = {
   /**
@@ -141,5 +153,22 @@ export const Storage = {
       console.error('Import failed', e);
       return 0;
     }
+  },
+
+  /**
+   * Get the list of models.
+   * @returns {Array} List of model names.
+   */
+  getModels() {
+    const data = localStorage.getItem(STORAGE_KEY_MODELS);
+    return data ? JSON.parse(data) : DEFAULT_MODELS;
+  },
+
+  /**
+   * Save the list of models.
+   * @param {Array} models 
+   */
+  saveModels(models) {
+    localStorage.setItem(STORAGE_KEY_MODELS, JSON.stringify(models));
   }
 };
