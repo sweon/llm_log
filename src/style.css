@@ -395,4 +395,69 @@ button {
 
 .btn-delete-model:hover {
     color: var(--danger-color);
+}/* Updated Model Management UI */
+.model-list-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    border-bottom: 1px solid var(--border-color);
+    gap: 0.5rem;
+}
+
+.model-list-item input {
+    flex: 1;
+    padding: 0.25rem;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+}
+
+.model-item-actions {
+    display: flex;
+    gap: 0.25rem;
+}
+
+.btn-icon-sm {
+    background: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 4px;
+    font-size: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-icon-sm:hover {
+    background-color: #f0f0f0;
+    border-color: #ddd;
+}
+
+.btn-delete-model:hover {
+    background-color: #ffebee;
+    color: var(--danger-color);
+}/* Models View */
+#models-view {
+    padding: 0;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+#models-view .add-model-container {
+    padding: 0 1rem;
+    margin-bottom: 2rem;
+}
+
+#models-view #model-list {
+    border: none;
+    border-top: 1px solid var(--border-color);
+    max-height: none;
+    /* remove modal limitation */
+    flex: 1;
+}
+
+#models-view .model-list-item {
+    padding: 1rem;
 }

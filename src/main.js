@@ -4,6 +4,7 @@ import { Storage } from './storage.js';
 
 // State
 let currentLogId = null;
+let confirmCallback = null;
 let isEditing = false;
 
 
@@ -48,8 +49,7 @@ const app = {
     },
     manageModels: {
       btnOpen: document.getElementById('btn-manage-models'),
-      modal: document.getElementById('manage-models-modal'),
-      btnClose: document.getElementById('btn-close-models'),
+      view: document.getElementById('models-view'),
       input: document.getElementById('new-model-input'),
       btnAdd: document.getElementById('btn-add-model'),
       list: document.getElementById('model-list'),
@@ -96,14 +96,13 @@ function setupEventListeners() {
 
   // Viewer
   app.main.viewer.btnEdit.addEventListener('click', () => startEditing(currentLogId));
-  app.main.viewer.btnDelete.addEventListener('click', showDeleteModal);
+  app.main.viewer.btnDelete.addEventListener('click', requestDeleteLog);
 
   app.main.modal.btnCancel.addEventListener('click', hideDeleteModal);
   app.main.modal.btnConfirm.addEventListener('click', confirmDelete);
 
   // Manage Models
   app.main.manageModels.btnOpen.addEventListener('click', openManageModels);
-  app.main.manageModels.btnClose.addEventListener('click', closeManageModels);
   app.main.manageModels.btnAdd.addEventListener('click', addModel);
 }
 
@@ -235,22 +234,36 @@ function cancelEdit() {
   }
 }
 
-function showDeleteModal() {
-  if (!currentLogId) return;
+function hideDeleteModal() {
+  app.main.modal.view.classList.add('hidden');
+  confirmCallback = null;
+}
+
+function showDeleteModal(title, message, callback) {
+  document.getElementById('modal-title').textContent = title;
+  document.getElementById('modal-message').textContent = message;
+  confirmCallback = callback;
   app.main.modal.view.classList.remove('hidden');
 }
 
-function hideDeleteModal() {
-  app.main.modal.view.classList.add('hidden');
+function requestDeleteLog() {
+  if (!currentLogId) return;
+  showDeleteModal(
+    'Delete Log',
+    'Are you sure you want to delete this log? This action cannot be undone.',
+    () => {
+      Storage.delete(currentLogId);
+      currentLogId = null;
+      refreshList();
+      showEmptyState();
+    }
+  );
 }
 
 function confirmDelete() {
-  if (!currentLogId) return;
-
-  Storage.delete(currentLogId);
-  currentLogId = null;
-  refreshList();
-  showEmptyState();
+  if (confirmCallback) {
+    confirmCallback();
+  }
   hideDeleteModal();
 }
 
@@ -259,12 +272,9 @@ function confirmDelete() {
 
 // Model Management
 function openManageModels() {
-  app.main.manageModels.modal.classList.remove('hidden');
+  hideAllViews();
+  app.main.manageModels.view.classList.remove('hidden');
   renderModelList();
-}
-
-function closeManageModels() {
-  app.main.manageModels.modal.classList.add('hidden');
 }
 
 function renderModelList() {
@@ -276,12 +286,98 @@ function renderModelList() {
     const li = document.createElement('li');
     li.className = 'model-list-item';
     li.innerHTML = `
-      <span>${model}</span>
-      <button class="btn-delete-model" data-model="${model}">×</button>
+      <span class="model-name">${model}</span>
+      <div class="model-item-actions">
+        <button class="btn-icon-sm btn-edit-model" title="Edit">✎</button>
+        <button class="btn-icon-sm btn-delete-model" title="Delete">×</button>
+      </div>
     `;
-    li.querySelector('.btn-delete-model').addEventListener('click', () => deleteModel(model));
+
+    const btnEdit = li.querySelector('.btn-edit-model');
+    const btnDelete = li.querySelector('.btn-delete-model');
+
+    btnEdit.addEventListener('click', () => enableEditMode(model, li));
+    btnDelete.addEventListener('click', () => deleteModel(model));
+
     list.appendChild(li);
   });
+}
+
+function enableEditMode(modelName, li) {
+  li.innerHTML = `
+    <input type="text" class="model-edit-input" value="${modelName}" />
+    <div class="model-item-actions">
+      <button class="btn-icon-sm btn-save-model" title="Save">✓</button>
+      <button class="btn-icon-sm btn-cancel-model" title="Cancel">✕</button>
+    </div>
+  `;
+
+  const input = li.querySelector('.model-edit-input');
+  const btnSave = li.querySelector('.btn-save-model');
+  const btnCancel = li.querySelector('.btn-cancel-model');
+
+  input.focus();
+
+  btnSave.addEventListener('click', () => saveEditedModel(modelName, input.value.trim()));
+  btnCancel.addEventListener('click', () => renderModelList()); // Re-render to cancel
+
+  // Save on Enter
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') saveEditedModel(modelName, input.value.trim());
+    if (e.key === 'Escape') renderModelList();
+  });
+}
+
+function saveEditedModel(oldName, newName) {
+  if (!newName || newName === oldName) {
+    renderModelList();
+    return;
+  }
+
+  const models = Storage.getModels();
+  if (models.includes(newName)) {
+    alert('Model name already exists.');
+    return;
+  }
+
+  // Update Model List
+  const index = models.indexOf(oldName);
+  if (index !== -1) {
+    models[index] = newName;
+    Storage.saveModels(models);
+  }
+
+  // Cascade Update: Verify all logs using this model are updated
+  const allLogs = Storage.getAll();
+  let updatedCount = 0;
+  allLogs.forEach(log => {
+    if (log.model === oldName) {
+      log.model = newName;
+      Storage.save(log);
+      updatedCount++;
+    }
+  });
+
+  if (updatedCount > 0) {
+    console.log(`Updated ${updatedCount} logs from "${oldName}" to "${newName}".`);
+  }
+
+  // Update current selection if editing
+  if (app.main.editor.model.value === oldName) {
+    // We need to repopulate first, then set value
+    populateModelSelect();
+    app.main.editor.model.value = newName;
+  } else {
+    populateModelSelect();
+  }
+
+  // Update viewer if viewing
+  if (app.main.viewer.model.textContent === oldName) {
+    app.main.viewer.model.textContent = newName;
+  }
+
+  refreshList(); // Update sidebar list if model is shown there (it is)
+  renderModelList();
 }
 
 function addModel() {
@@ -305,13 +401,17 @@ function addModel() {
 }
 
 function deleteModel(modelToDelete) {
-  if (!confirm(`Delete model "${modelToDelete}"?`)) return;
-
-  let models = Storage.getModels();
-  models = models.filter(m => m !== modelToDelete);
-  Storage.saveModels(models);
-  renderModelList();
-  populateModelSelect();
+  showDeleteModal(
+    'Delete Model',
+    `Are you sure you want to delete the model "${modelToDelete}"? This action cannot be undone.`,
+    () => {
+      let models = Storage.getModels();
+      models = models.filter(m => m !== modelToDelete);
+      Storage.saveModels(models);
+      renderModelList();
+      populateModelSelect();
+    }
+  );
 }
 
 function showEmptyState() {
@@ -375,6 +475,7 @@ function hideAllViews() {
   app.main.emptyState.classList.add('hidden');
   app.main.editor.view.classList.add('hidden');
   app.main.viewer.view.classList.add('hidden');
+  app.main.manageModels.view.classList.add('hidden');
 }
 
 init();
