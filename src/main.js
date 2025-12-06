@@ -1,6 +1,11 @@
 import './style.css';
 import { marked } from 'marked';
+import markedKatex from 'marked-katex-extension';
+import 'katex/dist/katex.min.css';
+import { Storage } from './storage.js';
+
 marked.use({ breaks: true, gfm: true });
+marked.use(markedKatex({ throwOnError: false }));
 
 // Customize renderer to open links in new tab
 const renderer = {
@@ -9,7 +14,6 @@ const renderer = {
   }
 };
 marked.use({ renderer });
-import { Storage } from './storage.js';
 
 // State
 let currentLogId = null;
