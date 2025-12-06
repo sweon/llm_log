@@ -70,7 +70,7 @@ function populateModelSelect() {
   const select = app.main.editor.model;
   select.innerHTML = '<option value="" disabled selected>Select Model</option>';
 
-  const models = Storage.getModels();
+  const models = [...Storage.getModels()].reverse();
   models.forEach(model => {
     const option = document.createElement('option');
     option.value = model;
