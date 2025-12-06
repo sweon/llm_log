@@ -26,6 +26,13 @@
   --font-sans: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
   --font-mono: 'Fira Code', monospace;
   --content-bg: #ffffff;
+  --link-color: #007bff;
+  --blockquote-color: #666666;
+  --blockquote-bg: transparent;
+  --th-bg: #f4f4f4;
+  --th-color: #333333;
+  --code-color: #d63384;
+  /* Standard reddish pink for inline code */
 }
 
 body.dark-theme {
@@ -48,6 +55,12 @@ body.dark-theme {
   --btn-icon-hover: #555555;
   --btn-icon-border: #555;
   --content-bg: #1e1e1e;
+  --link-color: #66b3ff;
+  --blockquote-color: #cccccc;
+  --blockquote-bg: #2a2a2a;
+  --th-bg: #2a2a2a;
+  --th-color: #ffffff;
+  --code-color: #e0e0e0;
 }
 
 /* ... existing styles ... */
@@ -57,6 +70,15 @@ body.dark-theme {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+}
+
+a {
+  color: var(--link-color);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
 }
 
 body {
@@ -140,11 +162,11 @@ body {
 }
 
 .log-item:hover {
-  background-color: #e0e0e0;
+  background-color: var(--item-hover);
 }
 
 .log-item.active {
-  background-color: #fff;
+  background-color: var(--item-active);
   border-left: 4px solid var(--primary-color);
 }
 
@@ -158,7 +180,7 @@ body {
 
 .log-item p {
   font-size: 0.8rem;
-  color: #666;
+  color: var(--text-secondary);
 }
 
 /* Main Content */
@@ -304,14 +326,15 @@ button {
 }
 
 .markdown-body code {
-  background-color: #f4f4f4;
+  background-color: var(--code-bg);
+  color: var(--code-color);
   padding: 0.2rem 0.4rem;
   border-radius: 3px;
   font-family: var(--font-mono);
 }
 
 .markdown-body pre {
-  background-color: #f4f4f4;
+  background-color: var(--code-bg);
   padding: 1rem;
   border-radius: 4px;
   overflow-x: auto;
@@ -319,9 +342,10 @@ button {
 }
 
 .markdown-body blockquote {
-  border-left: 4px solid #ddd;
-  padding-left: 1rem;
-  color: #666;
+  border-left: 4px solid var(--blockquote-border);
+  padding: 0.5rem 1rem;
+  color: var(--blockquote-color);
+  background-color: var(--blockquote-bg);
   margin-bottom: 1rem;
 }
 
@@ -340,7 +364,8 @@ button {
 }
 
 .markdown-body th {
-  background-color: #f4f4f4;
+  background-color: var(--th-bg);
+  color: var(--th-color);
   font-weight: bold;
 }
 
@@ -577,7 +602,4 @@ button {
   visibility: visible !important;
 }
 
-/* .btn-delete-comment will now use .btn-sm and .btn-danger classes */
-.btn-delete-comment {
-  /* Inherits from standard classes */
-}
+/* .btn-delete-comment uses .btn-sm and .btn-danger classes directly */

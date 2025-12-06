@@ -1,6 +1,14 @@
 import './style.css';
 import { marked } from 'marked';
 marked.use({ breaks: true, gfm: true });
+
+// Customize renderer to open links in new tab
+const renderer = {
+  link({ href, title, text }) {
+    return `<a target="_blank" href="${href}" title="${title || ''}">${text}</a>`;
+  }
+};
+marked.use({ renderer });
 import { Storage } from './storage.js';
 
 // State
@@ -21,6 +29,7 @@ const app = {
     btnImport: document.getElementById('btn-import'),
     fileImport: document.getElementById('file-import'),
     list: document.getElementById('log-list'),
+    btnToggle: document.getElementById('btn-theme-toggle'),
   },
   main: {
     emptyState: document.getElementById('empty-state'),
@@ -63,6 +72,7 @@ const app = {
 
 // Initialize
 function init() {
+  initTheme();
   populateModelSelect();
   renderLogList();
   showEmptyState();
@@ -82,6 +92,26 @@ function populateModelSelect() {
   });
 }
 
+function initTheme() {
+  const savedTheme = localStorage.getItem('theme');
+  const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+  if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+    document.body.classList.add('dark-theme');
+    if (app.sidebar.btnToggle) app.sidebar.btnToggle.textContent = '☀️';
+  } else {
+    document.body.classList.remove('dark-theme');
+    if (app.sidebar.btnToggle) app.sidebar.btnToggle.textContent = '🌙';
+  }
+}
+
+function toggleTheme() {
+  document.body.classList.toggle('dark-theme');
+  const isDark = document.body.classList.contains('dark-theme');
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  if (app.sidebar.btnToggle) app.sidebar.btnToggle.textContent = isDark ? '☀️' : '🌙';
+}
+
 // Event Listeners
 function setupEventListeners() {
   // Sidebar
@@ -92,7 +122,9 @@ function setupEventListeners() {
   // Data Management
   app.sidebar.btnExport.addEventListener('click', exportData);
   app.sidebar.btnImport.addEventListener('click', () => app.sidebar.fileImport.click());
+  app.sidebar.btnImport.addEventListener('click', () => app.sidebar.fileImport.click());
   app.sidebar.fileImport.addEventListener('change', importData);
+  if (app.sidebar.btnToggle) app.sidebar.btnToggle.addEventListener('click', toggleTheme);
 
   // Editor
   app.main.editor.btnSave.addEventListener('click', saveLog);
