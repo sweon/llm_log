@@ -163,7 +163,7 @@ function viewLog(id) {
       const span = document.createElement('span');
       span.textContent = tag;
       span.addEventListener('click', () => {
-        app.sidebar.searchInput.value = tag;
+        app.sidebar.searchInput.value = 'tag:' + tag;
         refreshList();
       });
       app.main.viewer.tags.appendChild(span);

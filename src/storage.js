@@ -93,14 +93,24 @@ export const Storage = {
     // Filter
     if (query) {
       const lowerQuery = query.toLowerCase();
-      logs = logs.filter(log => {
-        return (
-          (log.title && log.title.toLowerCase().includes(lowerQuery)) ||
-          (log.content && log.content.toLowerCase().includes(lowerQuery)) ||
-          (log.model && log.model.toLowerCase().includes(lowerQuery)) ||
-          (log.tags && log.tags.some(tag => tag.toLowerCase().includes(lowerQuery)))
+
+      if (lowerQuery.startsWith('tag:')) {
+        // Tag-specific search (exact match within tags)
+        const tagQuery = lowerQuery.replace('tag:', '').trim();
+        logs = logs.filter(log =>
+          log.tags && log.tags.some(tag => tag.toLowerCase() === tagQuery)
         );
-      });
+      } else {
+        // General search
+        logs = logs.filter(log => {
+          return (
+            (log.title && log.title.toLowerCase().includes(lowerQuery)) ||
+            (log.content && log.content.toLowerCase().includes(lowerQuery)) ||
+            (log.model && log.model.toLowerCase().includes(lowerQuery)) ||
+            (log.tags && log.tags.some(tag => tag.toLowerCase().includes(lowerQuery)))
+          );
+        });
+      }
     }
 
     // Sort
