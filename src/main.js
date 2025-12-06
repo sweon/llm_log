@@ -283,7 +283,7 @@ function openManageModels() {
 }
 
 function renderModelList() {
-  const models = Storage.getModels();
+  const models = [...Storage.getModels()].reverse();
   const list = app.main.manageModels.list;
   list.innerHTML = '';
 
