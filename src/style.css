@@ -1,15 +1,57 @@
+/* CSS Variables */
 :root {
   --bg-color: #f9f9f9;
   --sidebar-bg: #f0f0f0;
-  --text-color: #333;
-  --border-color: #ddd;
+  --header-bg: #ffffff;
+  --text-color: #333333;
+  --text-secondary: #666666;
+  --border-color: #dddddd;
+  --input-bg: #ffffff;
+  --item-hover: #e0e0e0;
+  --item-active: #ffffff;
+  --tag-bg: #eeeeee;
   --primary-color: #007bff;
   --primary-hover: #0056b3;
   --danger-color: #dc3545;
   --danger-hover: #bd2130;
+  --select-bg: #ffffff;
+  --btn-secondary-bg: #e0e0e0;
+  --btn-secondary-color: #333333;
+  --code-bg: #f4f4f4;
+  --blockquote-border: #dddddd;
+  --table-header-bg: #f4f4f4;
+  --btn-icon-hover: #d0d0d0;
+  --btn-icon-border: #ccc;
+
   --font-sans: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
   --font-mono: 'Fira Code', monospace;
+  --content-bg: #ffffff;
 }
+
+body.dark-theme {
+  --bg-color: #1a1a1a;
+  --sidebar-bg: #2d2d2d;
+  --header-bg: #2d2d2d;
+  --text-color: #e0e0e0;
+  --text-secondary: #aaaaaa;
+  --border-color: #444444;
+  --input-bg: #333333;
+  --item-hover: #3d3d3d;
+  --item-active: #404040;
+  --tag-bg: #444444;
+  --select-bg: #333333;
+  --btn-secondary-bg: #444444;
+  --btn-secondary-color: #e0e0e0;
+  --code-bg: #2d2d2d;
+  --blockquote-border: #444444;
+  --table-header-bg: #333333;
+  --btn-icon-hover: #555555;
+  --btn-icon-border: #555;
+  --content-bg: #1e1e1e;
+}
+
+/* ... existing styles ... */
+
 
 * {
   box-sizing: border-box;
@@ -124,7 +166,9 @@ body {
   flex: 1;
   padding: 2rem;
   overflow-y: auto;
-  background-color: #fff;
+  background-color: var(--content-bg);
+  padding-bottom: 150px;
+  /* Ensure space for bottom content */
 }
 
 .hidden {
@@ -473,4 +517,67 @@ button {
 
 #btn-manage-models:hover {
   background-color: var(--primary-hover);
+}
+
+/* Comments Section */
+.comments-section {
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border-color);
+}
+
+.comments-section h3 {
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  color: var(--text-color);
+}
+
+#comments-list {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 1.5rem;
+}
+
+.comment-item {
+  background-color: var(--bg-color);
+  border: 1px solid var(--border-color);
+  padding: 0.75rem;
+  border-radius: 4px;
+  margin-bottom: 0.75rem;
+}
+
+.comment-meta {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.25rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.comment-text {
+  white-space: pre-wrap;
+  color: var(--text-color);
+}
+
+.add-comment textarea {
+  width: 100%;
+  min-height: 80px;
+  margin-bottom: 0.5rem;
+  resize: vertical;
+  background-color: var(--input-bg);
+  color: var(--text-color);
+  border: 1px solid var(--border-color);
+}
+
+#btn-add-comment {
+  margin-top: 0.5rem;
+  display: inline-block !important;
+  /* Keep this for safety if needed, or remove if confident */
+  opacity: 1 !important;
+  visibility: visible !important;
+}
+
+/* .btn-delete-comment will now use .btn-sm and .btn-danger classes */
+.btn-delete-comment {
+  /* Inherits from standard classes */
 }

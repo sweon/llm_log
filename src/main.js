@@ -42,6 +42,9 @@ const app = {
       content: document.getElementById('view-content'),
       btnEdit: document.getElementById('btn-edit'),
       btnDelete: document.getElementById('btn-delete'),
+      commentsList: document.getElementById('comments-list'),
+      commentInput: document.getElementById('comment-input'),
+      btnAddComment: document.getElementById('btn-add-comment'),
     },
     modal: {
       view: document.getElementById('delete-modal'),
@@ -98,6 +101,13 @@ function setupEventListeners() {
   // Viewer
   app.main.viewer.btnEdit.addEventListener('click', () => startEditing(currentLogId));
   app.main.viewer.btnDelete.addEventListener('click', requestDeleteLog);
+
+  // Delegated listener for comment button (robust against init timing)
+  document.addEventListener('click', (e) => {
+    if (e.target && e.target.id === 'btn-add-comment') {
+      submitComment();
+    }
+  });
 
   app.main.modal.btnCancel.addEventListener('click', hideDeleteModal);
   app.main.modal.btnConfirm.addEventListener('click', confirmDelete);
@@ -161,6 +171,7 @@ function viewLog(id) {
   }
 
   app.main.viewer.content.innerHTML = marked.parse(log.content || '');
+  renderComments(log);
 }
 
 function startEditing(id) {
@@ -270,7 +281,90 @@ function confirmDelete() {
     confirmCallback();
   }
   hideDeleteModal();
+  hideDeleteModal();
 }
+
+// Comments
+function renderComments(log) {
+  const list = document.getElementById('comments-list');
+  const input = document.getElementById('comment-input');
+
+  if (!list || !input) return;
+
+  list.innerHTML = '';
+  input.value = '';
+
+  const comments = log.comments || [];
+  comments.forEach(comment => {
+    const li = document.createElement('li');
+    li.className = 'comment-item';
+    li.innerHTML = `
+      <div class="comment-meta">
+        <span>${new Date(comment.createdAt).toLocaleString()}</span>
+        <button class="btn-sm btn-danger btn-delete-comment" title="Delete Comment">Delete</button>
+      </div>
+      <div class="comment-text">${comment.text}</div>
+    `;
+
+    // Wire up delete button
+    li.querySelector('.btn-delete-comment').addEventListener('click', () => deleteComment(comment.id));
+
+    list.appendChild(li);
+  });
+}
+
+function submitComment() {
+  if (!currentLogId) return;
+
+  const input = document.getElementById('comment-input');
+  if (!input) return;
+
+  const text = input.value.trim();
+  if (!text) return;
+
+  try {
+    const log = Storage.get(currentLogId);
+    if (!log) return;
+
+    if (!log.comments) log.comments = [];
+
+    // Fallback for UUID if crypto is not available
+    const uuid = (typeof crypto !== 'undefined' && crypto.randomUUID)
+      ? crypto.randomUUID()
+      : 'c-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+
+    const newComment = {
+      id: uuid,
+      text: text,
+      createdAt: new Date().toISOString()
+    };
+
+    log.comments.push(newComment);
+    Storage.save(log);
+
+    renderComments(log);
+  } catch (error) {
+    console.error('Failed to add comment:', error);
+    alert('Failed to add comment. See console for details.');
+  }
+}
+
+function deleteComment(commentId) {
+  if (!currentLogId) return;
+  const log = Storage.get(currentLogId);
+  if (!log || !log.comments) return;
+
+  showDeleteModal(
+    'Delete Comment',
+    'Are you sure you want to delete this comment?',
+    () => {
+      log.comments = log.comments.filter(c => c.id !== commentId);
+      Storage.save(log);
+      renderComments(log);
+    }
+  );
+}
+
 
 // Deprecated: deleteLog replaced by modal flow
 // function deleteLog() { ... }
