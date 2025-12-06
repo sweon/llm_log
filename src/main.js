@@ -1,5 +1,6 @@
 import './style.css';
 import { marked } from 'marked';
+marked.use({ breaks: true, gfm: true });
 import { Storage } from './storage.js';
 
 // State
