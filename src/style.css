@@ -235,6 +235,12 @@ button {
   border-radius: 4px;
   margin-right: 0.5rem;
   font-size: 0.8rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+#view-tags span:hover {
+  background-color: #ddd;
 }
 
 /* Markdown Styles (Basic) */
@@ -457,12 +463,14 @@ button {
 
 #models-view .model-list-item {
   padding: 1rem;
-}#btn-manage-models {
-    background-color: var(--primary-color);
-    color: white;
-    border: none;
+}
+
+#btn-manage-models {
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
 }
 
 #btn-manage-models:hover {
-    background-color: var(--primary-hover);
+  background-color: var(--primary-hover);
 }

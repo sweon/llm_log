@@ -151,6 +151,10 @@ function viewLog(id) {
     log.tags.forEach(tag => {
       const span = document.createElement('span');
       span.textContent = tag;
+      span.addEventListener('click', () => {
+        app.sidebar.searchInput.value = tag;
+        refreshList();
+      });
       app.main.viewer.tags.appendChild(span);
     });
   }
