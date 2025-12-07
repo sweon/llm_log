@@ -12,6 +12,7 @@
     "vite": "^7.2.4"
   },
   "dependencies": {
+    "easymde": "^2.20.0",
     "katex": "^0.16.25",
     "marked": "^17.0.1",
     "marked-katex-extension": "^5.1.6"

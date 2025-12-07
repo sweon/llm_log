@@ -2,6 +2,8 @@ import './style.css';
 import { marked } from 'marked';
 import markedKatex from 'marked-katex-extension';
 import 'katex/dist/katex.min.css';
+import EasyMDE from 'easymde';
+import 'easymde/dist/easymde.min.css';
 import { Storage } from './storage.js';
 
 marked.use({ breaks: true, gfm: true });
@@ -19,6 +21,8 @@ marked.use({ renderer });
 let currentLogId = null;
 let confirmCallback = null;
 let isEditing = false;
+let easyMDE = null;
+let editingCommentId = null;
 
 
 
@@ -58,6 +62,7 @@ const app = {
       commentsList: document.getElementById('comments-list'),
       commentInput: document.getElementById('comment-input'),
       btnAddComment: document.getElementById('btn-add-comment'),
+      // Note: cancel button will be dynamically added/mocked if not in HTML, but best to inject
     },
     modal: {
       view: document.getElementById('delete-modal'),
@@ -81,6 +86,37 @@ function init() {
   renderLogList();
   showEmptyState();
   setupEventListeners();
+  initEasyMDE();
+  injectCancelCommentButton();
+}
+
+function injectCancelCommentButton() {
+  // Dynamically add a cancel button next to Add Comment if it doesn't exist
+  if (!document.getElementById('btn-cancel-comment')) {
+    const addBtn = app.main.viewer.btnAddComment;
+    if (addBtn && addBtn.parentElement) {
+      const cancelBtn = document.createElement('button');
+      cancelBtn.id = 'btn-cancel-comment';
+      cancelBtn.className = 'btn-sm hidden'; // Start hidden
+      cancelBtn.textContent = 'Cancel Edit';
+      cancelBtn.style.marginLeft = '10px';
+      addBtn.parentElement.appendChild(cancelBtn);
+
+      cancelBtn.addEventListener('click', cancelCommentEdit);
+    }
+  }
+}
+
+function initEasyMDE() {
+  if (app.main.viewer.commentInput) {
+    easyMDE = new EasyMDE({
+      element: app.main.viewer.commentInput,
+      spellChecker: false,
+      status: false,
+      placeholder: 'Add a comment... (Markdown supported)',
+      minHeight: '100px',
+    });
+  }
 }
 
 function populateModelSelect() {
@@ -178,6 +214,7 @@ function refreshList() {
 function viewLog(id) {
   currentLogId = id;
   isEditing = false;
+  cancelCommentEdit(); // Reset comment edit state
   const log = Storage.get(id);
   if (!log) return;
 
@@ -208,6 +245,12 @@ function viewLog(id) {
 
   app.main.viewer.content.innerHTML = marked.parse(log.content || '');
   renderComments(log);
+
+  // Refresh EasyMDE if needed (sometimes helps with layout when switching views)
+  if (easyMDE) {
+    easyMDE.value('');
+    setTimeout(() => easyMDE.codemirror.refresh(), 100);
+  }
 }
 
 function startEditing(id) {
@@ -323,12 +366,11 @@ function confirmDelete() {
 // Comments
 function renderComments(log) {
   const list = document.getElementById('comments-list');
-  const input = document.getElementById('comment-input');
+  // Input clearing is now handled by EasyMDE in viewLog or submitComment
 
-  if (!list || !input) return;
+  if (!list) return;
 
   list.innerHTML = '';
-  input.value = '';
 
   const comments = log.comments || [];
   comments.forEach(comment => {
@@ -337,25 +379,66 @@ function renderComments(log) {
     li.innerHTML = `
       <div class="comment-meta">
         <span>${new Date(comment.createdAt).toLocaleString()}</span>
-        <button class="btn-sm btn-danger btn-delete-comment" title="Delete Comment">Delete</button>
+        <div class="comment-actions">
+           <button class="btn-sm btn-edit-comment" title="Edit Comment">Edit</button>
+           <button class="btn-sm btn-danger btn-delete-comment" title="Delete Comment">Delete</button>
+        </div>
       </div>
-      <div class="comment-text">${comment.text}</div>
+      <div class="comment-text markdown-body">${marked.parse(comment.text)}</div>
     `;
 
-    // Wire up delete button
+    // Wire up buttons
+    li.querySelector('.btn-edit-comment').addEventListener('click', () => editComment(comment.id));
     li.querySelector('.btn-delete-comment').addEventListener('click', () => deleteComment(comment.id));
 
     list.appendChild(li);
   });
 }
 
+function editComment(commentId) {
+  const log = Storage.get(currentLogId);
+  if (!log || !log.comments) return;
+
+  const comment = log.comments.find(c => c.id === commentId);
+  if (!comment) return;
+
+  editingCommentId = commentId;
+
+  if (easyMDE) {
+    easyMDE.value(comment.text);
+    easyMDE.codemirror.focus();
+
+    // Scroll to editor
+    document.getElementById('comment-input').scrollIntoView({ behavior: 'smooth' });
+  }
+
+  document.getElementById('btn-add-comment').textContent = 'Update Comment';
+  const cancelBtn = document.getElementById('btn-cancel-comment');
+  if (cancelBtn) cancelBtn.classList.remove('hidden');
+}
+
+function cancelCommentEdit() {
+  editingCommentId = null;
+  if (easyMDE) {
+    easyMDE.value('');
+  }
+  document.getElementById('btn-add-comment').textContent = 'Add Comment';
+  const cancelBtn = document.getElementById('btn-cancel-comment');
+  if (cancelBtn) cancelBtn.classList.add('hidden');
+}
+
 function submitComment() {
   if (!currentLogId) return;
 
-  const input = document.getElementById('comment-input');
-  if (!input) return;
+  // Use EasyMDE value
+  let text = '';
+  if (easyMDE) {
+    text = easyMDE.value().trim();
+  } else {
+    const input = document.getElementById('comment-input');
+    if (input) text = input.value.trim();
+  }
 
-  const text = input.value.trim();
   if (!text) return;
 
   try {
@@ -364,24 +447,39 @@ function submitComment() {
 
     if (!log.comments) log.comments = [];
 
-    // Fallback for UUID if crypto is not available
-    const uuid = (typeof crypto !== 'undefined' && crypto.randomUUID)
-      ? crypto.randomUUID()
-      : 'c-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+    if (editingCommentId) {
+      // Update existing comment
+      const commentToUpdate = log.comments.find(c => c.id === editingCommentId);
+      if (commentToUpdate) {
+        commentToUpdate.text = text;
+        // Optional: update edited timestamp? For now, keep original creation time or update it?
+        // Let's keep createdAt as is.
+      }
+    } else {
+      // Create new comment
+      // Fallback for UUID if crypto is not available
+      const uuid = (typeof crypto !== 'undefined' && crypto.randomUUID)
+        ? crypto.randomUUID()
+        : 'c-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
 
-    const newComment = {
-      id: uuid,
-      text: text,
-      createdAt: new Date().toISOString()
-    };
+      const newComment = {
+        id: uuid,
+        text: text,
+        createdAt: new Date().toISOString()
+      };
+      log.comments.push(newComment);
+    }
 
-    log.comments.push(newComment);
     Storage.save(log);
 
     renderComments(log);
+
+    // Reset state and clear editor
+    cancelCommentEdit();
+
   } catch (error) {
-    console.error('Failed to add comment:', error);
-    alert('Failed to add comment. See console for details.');
+    console.error('Failed to add/update comment:', error);
+    alert('Failed to save comment. See console for details.');
   }
 }
 
@@ -396,6 +494,12 @@ function deleteComment(commentId) {
     () => {
       log.comments = log.comments.filter(c => c.id !== commentId);
       Storage.save(log);
+
+      // If deleting the currently editing comment, cancel edit
+      if (editingCommentId === commentId) {
+        cancelCommentEdit();
+      }
+
       renderComments(log);
     }
   );
