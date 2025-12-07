@@ -603,3 +603,57 @@ button {
 }
 
 /* .btn-delete-comment uses .btn-sm and .btn-danger classes directly */
+
+/* Dark Mode Overrides */
+body.dark-theme .modal-content {
+  background-color: var(--sidebar-bg);
+  color: var(--text-color);
+}
+
+body.dark-theme .modal-content h2 {
+  color: var(--text-color);
+}
+
+body.dark-theme .modal-content p {
+  color: var(--text-secondary);
+}
+
+/* EasyMDE Dark Mode */
+body.dark-theme .editor-toolbar {
+  background-color: var(--sidebar-bg);
+  border-color: var(--border-color);
+}
+
+body.dark-theme .editor-toolbar i {
+  color: var(--text-color);
+}
+
+body.dark-theme .editor-toolbar a:hover,
+body.dark-theme .editor-toolbar a.active {
+  background-color: var(--item-hover);
+  border-color: var(--border-color);
+}
+
+body.dark-theme .editor-toolbar.fullscreen {
+  background-color: var(--bg-color);
+}
+
+body.dark-theme .editor-preview-side {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  border-color: var(--border-color);
+}
+
+body.dark-theme .CodeMirror {
+  background-color: var(--input-bg);
+  color: var(--text-color);
+  border-color: var(--border-color);
+}
+
+body.dark-theme .CodeMirror-cursor {
+  border-left: 1px solid var(--text-color);
+}
+
+body.dark-theme .editor-statusbar {
+  color: var(--text-secondary);
+}
