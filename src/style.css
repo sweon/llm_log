@@ -654,6 +654,11 @@ body.dark-theme .CodeMirror-cursor {
   border-left: 1px solid var(--text-color);
 }
 
-body.dark-theme .editor-statusbar {
-  color: var(--text-secondary);
+
+/* Syntax Highlighting Overrides */
+body.dark-theme .hljs-comment,
+body.dark-theme .hljs-quote,
+body.dark-theme .hljs-meta {
+  color: #a0a0a0 !important;
+  /* Lighter grey for better contrast in dark mode */
 }
