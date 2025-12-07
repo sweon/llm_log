@@ -12,7 +12,6 @@ import bash from 'highlight.js/lib/languages/bash';
 import css from 'highlight.js/lib/languages/css';
 import xml from 'highlight.js/lib/languages/xml';
 import markdown from 'highlight.js/lib/languages/markdown';
-import 'highlight.js/styles/atom-one-dark.css';
 
 hljs.registerLanguage('javascript', javascript);
 hljs.registerLanguage('json', json);
