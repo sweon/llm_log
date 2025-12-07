@@ -262,7 +262,7 @@ button {
   display: flex;
   gap: 1rem;
   margin-bottom: 1rem;
-  color: #666;
+  color: var(--text-secondary);
   font-size: 0.9rem;
   align-items: center;
   /* Align items vertically */
