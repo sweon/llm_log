@@ -638,7 +638,9 @@ body.dark-theme .editor-toolbar.fullscreen {
   background-color: var(--bg-color);
 }
 
-body.dark-theme .editor-preview-side {
+body.dark-theme .editor-preview-side,
+body.dark-theme .editor-preview,
+body.dark-theme .editor-preview-active {
   background-color: var(--bg-color);
   color: var(--text-color);
   border-color: var(--border-color);
