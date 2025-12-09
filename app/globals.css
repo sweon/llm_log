@@ -1,0 +1,227 @@
+@import "tailwindcss";
+
+:root {
+  --bg-color: #f9f9f9;
+  --sidebar-bg: #f0f0f0;
+  --header-bg: #ffffff;
+  --text-color: #333333;
+  --text-secondary: #666666;
+  --border-color: #dddddd;
+  --input-bg: #ffffff;
+  --item-hover: #e0e0e0;
+  --item-active: #ffffff;
+  --tag-bg: #eeeeee;
+  --primary-color: #007bff;
+  --primary-hover: #0056b3;
+  --danger-color: #dc3545;
+  --danger-hover: #bd2130;
+  --select-bg: #ffffff;
+  --btn-secondary-bg: #e0e0e0;
+  --btn-secondary-color: #333333;
+  --code-bg: #f4f4f4;
+  --blockquote-border: #dddddd;
+  --table-header-bg: #f4f4f4;
+  --btn-icon-hover: #d0d0d0;
+  --btn-icon-border: #ccc;
+
+  --font-sans: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
+  --font-mono: 'Fira Code', monospace;
+  --content-bg: #ffffff;
+  --link-color: #007bff;
+  --blockquote-color: #666666;
+  --blockquote-bg: transparent;
+  --th-bg: #f4f4f4;
+  --th-color: #333333;
+  --code-color: #d63384;
+}
+
+/* Dark theme handled by class 'dark-theme' to match logic */
+body.dark-theme {
+  --bg-color: #1a1a1a;
+  --sidebar-bg: #2d2d2d;
+  --header-bg: #2d2d2d;
+  --text-color: #e0e0e0;
+  --text-secondary: #aaaaaa;
+  --border-color: #444444;
+  --input-bg: #333333;
+  --item-hover: #3d3d3d;
+  --item-active: #404040;
+  --tag-bg: #444444;
+  --select-bg: #333333;
+  --btn-secondary-bg: #444444;
+  --btn-secondary-color: #e0e0e0;
+  --code-bg: #2d2d2d;
+  --blockquote-border: #444444;
+  --table-header-bg: #333333;
+  --btn-icon-hover: #555555;
+  --btn-icon-border: #555;
+  --content-bg: #1e1e1e;
+  --link-color: #66b3ff;
+  --blockquote-color: #cccccc;
+  --blockquote-bg: #2a2a2a;
+  --th-bg: #2a2a2a;
+  --th-color: #ffffff;
+  --code-color: #e0e0e0;
+}
+
+@theme inline {
+  --color-background: var(--bg-color);
+  --color-foreground: var(--text-color);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  font-family: var(--font-sans);
+  height: 100vh;
+  overflow: hidden;
+}
+
+a {
+  color: var(--link-color);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* --- Reused Classes --- */
+.hidden {
+  display: none !important;
+}
+
+.btn-primary {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-hover);
+}
+
+.btn-danger {
+  background-color: var(--danger-color);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  border: none;
+  cursor: pointer;
+}
+
+.btn-danger:hover {
+  background-color: var(--danger-hover);
+}
+
+.btn-sm {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.8rem;
+  background-color: #e0e0e0;
+  color: #333;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.btn-sm:hover {
+  background-color: #d0d0d0;
+}
+
+/* Markdown Styles */
+.markdown-body {
+  line-height: 1.6;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3 {
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+}
+
+.markdown-body p {
+  margin-bottom: 1rem;
+}
+
+.markdown-body code {
+  background-color: var(--code-bg);
+  color: var(--code-color);
+  padding: 0.2rem 0.4rem;
+  border-radius: 3px;
+  font-family: var(--font-mono);
+}
+
+.markdown-body pre {
+  background-color: var(--code-bg);
+  padding: 1rem;
+  border-radius: 4px;
+  overflow-x: auto;
+  margin-bottom: 1rem;
+}
+
+.markdown-body blockquote {
+  border-left: 4px solid var(--blockquote-border);
+  padding: 0.5rem 1rem;
+  color: var(--blockquote-color);
+  background-color: var(--blockquote-bg);
+  margin-bottom: 1rem;
+}
+
+.markdown-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1rem;
+}
+
+.markdown-body th,
+.markdown-body td {
+  border: 1px solid var(--border-color);
+  padding: 0.5rem;
+  text-align: left;
+}
+
+.markdown-body th {
+  background-color: var(--th-bg);
+  color: var(--th-color);
+  font-weight: bold;
+}
+
+/* EasyMDE Overrides */
+.editor-toolbar {
+  border-color: var(--border-color) !important;
+  background-color: var(--header-bg) !important;
+  color: var(--text-color) !important;
+}
+
+.editor-toolbar i {
+  color: var(--text-color) !important;
+}
+
+.CodeMirror {
+  background-color: var(--input-bg) !important;
+  color: var(--text-color) !important;
+  border-color: var(--border-color) !important;
+}
+
+.editor-preview {
+  background-color: var(--content-bg) !important;
+  color: var(--text-color) !important;
+}
+
+/* Highlight.js Theme Adjustments for Dark Mode */
+body.dark-theme .hljs {
+  background: #282c34;
+  color: #abb2bf;
+}
