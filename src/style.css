@@ -296,7 +296,7 @@ button {
 }
 
 #view-tags span {
-  background-color: #eee;
+  background-color: var(--tag-bg);
   padding: 0.2rem 0.5rem;
   border-radius: 4px;
   margin-right: 0.5rem;
@@ -306,7 +306,7 @@ button {
 }
 
 #view-tags span:hover {
-  background-color: #ddd;
+  background-color: var(--item-hover);
 }
 
 /* Markdown Styles (Basic) */
