@@ -105,9 +105,7 @@ export default function Sidebar() {
                 </div>
 
                 <div className="data-actions">
-                    {/* Models management could be a separate page or modal. Let's just link to it for now? */}
-                    {/* For MVP, maybe skip discrete model management UI in sidebar or add specific button later. */}
-                    {/* Let's keep existing buttons */}
+                    <button className="btn-sm btn-primary">Models</button>
                     <button onClick={handleExport} className="btn-sm">Export</button>
                     <label className="btn-sm cursor-pointer">
                         Import
