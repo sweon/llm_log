@@ -112,7 +112,7 @@ function ViewerContent() {
 
                 <div className="viewer-actions">
                     <Link href={`/edit?id=${log.id}`}>
-                        <button id="btn-edit" className="btn-sm">Edit</button>
+                        <button id="btn-edit" className="btn-sm btn-primary">Edit</button>
                     </Link>
                     <button onClick={() => setShowDelete(true)} id="btn-delete" className="btn-sm btn-danger">Delete</button>
                 </div>

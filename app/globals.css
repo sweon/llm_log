@@ -197,6 +197,24 @@ a:hover {
   background-color: #d0d0d0;
 }
 
+.btn-sm.btn-primary {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.btn-sm.btn-primary:hover {
+  background-color: var(--primary-hover);
+}
+
+.btn-sm.btn-danger {
+  background-color: var(--danger-color);
+  color: white;
+}
+
+.btn-sm.btn-danger:hover {
+  background-color: var(--danger-hover);
+}
+
 /* Markdown Styles */
 .markdown-body {
   line-height: 1.6;
@@ -282,4 +300,222 @@ a:hover {
 body.dark-theme .hljs {
   background: #282c34;
   color: #abb2bf;
+}
+
+/* Layout Stucture */
+#app {
+  display: flex;
+  width: 100%;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+#sidebar {
+  width: 300px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--sidebar-bg);
+  border-right: 1px solid var(--border-color);
+  height: 100%;
+}
+
+#main-content {
+  flex: 1;
+  overflow-y: auto;
+  position: relative;
+  background-color: var(--bg-color);
+  height: 100%;
+}
+
+/* Sidebar Components */
+.sidebar-header {
+  padding: 1rem;
+  background-color: var(--header-bg);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+
+.search-container input {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background-color: var(--input-bg);
+  color: var(--text-color);
+}
+
+.filter-container select {
+  width: 100%;
+  padding: 0.5rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  background-color: var(--select-bg);
+  color: var(--text-color);
+}
+
+.data-actions {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-top: 0.5rem;
+}
+
+#log-list {
+  flex: 1;
+  overflow-y: auto;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.log-item {
+  border-bottom: 1px solid var(--border-color);
+}
+
+.log-item a {
+  display: block;
+  padding: 1rem;
+  color: inherit;
+  text-decoration: none;
+}
+
+.log-item:hover {
+  background-color: var(--item-hover);
+}
+
+.log-item.active {
+  background-color: var(--item-active);
+  border-left: 4px solid var(--primary-color);
+}
+
+.log-item h3 {
+  margin: 0 0 0.25rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.log-item p {
+  margin: 0;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+/* Empty State */
+#empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-secondary);
+}
+
+/* Viewer Components */
+#viewer-view {
+  padding: 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+}
+
+.viewer-header {
+  margin-bottom: 1rem;
+  border-bottom: 2px solid var(--border-color);
+  padding-bottom: 1rem;
+}
+
+#view-title {
+  margin: 0;
+  font-size: 2rem;
+  color: var(--text-color);
+}
+
+.viewer-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+}
+
+.viewer-actions {
+  margin-left: auto;
+  display: flex;
+  gap: 0.5rem;
+}
+
+#view-tags {
+  display: flex;
+  gap: 0.5rem;
+  margin-top: 0.5rem;
+  width: 100%;
+}
+
+#view-tags span {
+  background-color: var(--tag-bg);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  color: var(--text-color);
+}
+
+/* Comments Section */
+.comments-section {
+  margin-top: 3rem;
+  border-top: 1px solid var(--border-color);
+  padding-top: 1rem;
+}
+
+#comments-list {
+  list-style: none;
+  padding: 0;
+}
+
+.comment-item {
+  border-bottom: 1px solid var(--border-color);
+  padding: 1rem 0;
+}
+
+.comment-meta {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+/* Modal */
+.modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal-content {
+  background-color: var(--content-bg);
+  padding: 2rem;
+  border-radius: 8px;
+  max-width: 400px;
+  width: 90%;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 1rem;
+  margin-top: 1.5rem;
 }
