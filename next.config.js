@@ -14,6 +14,7 @@ const withPWA = require("@ducanh2912/next-pwa").default({
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     output: "export",
+    basePath: "/llm_log",
     reactStrictMode: true,
     eslint: {
         ignoreDuringBuilds: true, // often helpful for migrations
